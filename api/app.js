@@ -1,18 +1,15 @@
 // =====================================================================
-// Library Management System  --  Express API over MySQL (library_db).
-// The vanilla frontend in /public calls these endpoints.
-// Write operations go through the stored procedures defined in
-// 05_procedures.sql, so all integrity logic lives in the database.
+// Express app (routes only — no app.listen). Shared by:
+//   - server.js        (local dev: adds static + listen)
+//   - api/index.js     (Vercel serverless: exports this app as the handler)
+// Write operations go through stored procedures in 05_procedures.sql.
 // =====================================================================
 const express = require('express');
-const path = require('path');
 const pool = require('./db');
 
 const app = express();
 app.use(express.json());
-app.use(express.static(path.join(__dirname, 'public')));
 
-// small helper: run SQL and send rows as JSON
 const send = (res, sql, params = []) =>
   pool.query(sql, params)
       .then(([rows]) => res.json(rows))
@@ -32,7 +29,7 @@ app.get('/api/stats', async (req, res) => {
   } catch (e) { res.status(500).json({ error: e.message }); }
 });
 
-// ---- Books: catalogue + availability (from the two views) ----
+// ---- Books: catalogue + availability (views) ----
 app.get('/api/books', (req, res) => {
   const s = `%${req.query.search || ''}%`;
   send(res, `
@@ -50,7 +47,7 @@ app.get('/api/members', (req, res) =>
                     email, membership_type AS type, join_date AS join_d, is_active AS active
              FROM member ORDER BY first_name`));
 
-// ---- Active loans (uses the view; days_overdue computed in SQL) ----
+// ---- Active loans (view) ----
 app.get('/api/loans', (req, res) =>
   send(res, `SELECT * FROM vw_active_loans ORDER BY days_overdue DESC`));
 
@@ -64,14 +61,13 @@ app.get('/api/available-copies', (req, res) =>
              FROM book_copy bc JOIN book b ON bc.book_id = b.book_id
              WHERE bc.status = 'Available' ORDER BY b.title`));
 
-// ---- Issue a book (calls stored procedure) ----
+// ---- Issue a book (stored procedure) ----
 app.post('/api/loans', async (req, res) => {
   const { copy_id, member_id, days } = req.body;
   try {
     const [rows] = await pool.query(
       'CALL sp_issue_book(?, ?, ?, ?, @bid); SELECT @bid AS borrow_id;',
       [copy_id, member_id, 1, days || 14]);
-    // multi-statement result: last set holds @bid
     res.json({ ok: true, borrow_id: rows[rows.length - 1][0].borrow_id });
   } catch (e) { res.status(400).json({ error: e.message }); }
 });
@@ -92,6 +88,4 @@ app.post('/api/fines/:memberId/pay', async (req, res) => {
   } catch (e) { res.status(400).json({ error: e.message }); }
 });
 
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () =>
-  console.log(`\n  Library Management System running at http://localhost:${PORT}\n`));
+module.exports = app;

@@ -27,10 +27,21 @@ mysql -u root -p < 04_queries.sql      # optional: see the query demos run
 ## 2. Run the web app (frontend + live MySQL)
 
 ```bash
-cd frontend
-# put your MySQL password in db.js (or set DB_PASSWORD)
+# from the project root
 npm install      # already done
 npm start        # -> http://localhost:3000
+```
+
+Easiest local DB is Docker: `docker compose up -d` then `npm start`.
+
+## Project structure
+
+```
+public/        vanilla HTML/CSS/JS frontend
+api/           Express app (app.js), serverless entry (index.js), db pool (db.js)
+server.js      local dev server (serves public/ + listens on :3000)
+vercel.json    serverless config for Vercel deployment
+deploy/init.sql combined schema+data+views+procedures for cloud import
 ```
 
 The browser (vanilla HTML/CSS/JS) calls the Express API, which reads/writes the

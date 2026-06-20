@@ -1,7 +1,7 @@
 {
   "name": "library-management-system",
   "version": "1.0.0",
-  "description": "Backend API connecting the vanilla HTML/CSS/JS frontend to MySQL library_db",
+  "description": "Library Management System (DBMS capstone) — vanilla HTML/CSS/JS frontend + Express API over MySQL. Runs locally and on Vercel (serverless).",
   "main": "server.js",
   "scripts": {
     "start": "node server.js"

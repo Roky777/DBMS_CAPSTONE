@@ -64,6 +64,28 @@ Open the generated URL. The dashboard should show counts and the Books tab shoul
 
 ---
 
+## Deploying on Vercel (serverless) + external MySQL
+
+The repo is already structured for Vercel: static frontend in `public/`, API in `api/`,
+config in `vercel.json`. Vercel does **not** host MySQL, so you need an external database first.
+
+1. **Create a cloud MySQL** (Railway or Aiven) and import `deploy/init.sql` into it
+   (see Step 1–2 above). Note its host/port/user/password, or its connection URL.
+2. Go to **vercel.com** → **Add New → Project** → import the GitHub repo `Roky777/DBMS_CAPSTONE`.
+   Leave the framework as **Other**; the root directory is the repo root.
+3. In **Settings → Environment Variables**, add the DB connection. Either a single URL:
+   - `MYSQL_URL` = `mysql://user:pass@host:port/library_db`
+   - `DB_SSL` = `true`   *(most cloud MySQL requires TLS)*
+
+   …or the separate vars: `DB_HOST, DB_PORT, DB_USER, DB_PASSWORD, DB_NAME=library_db, DB_SSL=true`.
+4. Click **Deploy**. Vercel gives you a public URL like `https://dbms-capstone.vercel.app`.
+
+> How it works: `vercel.json` serves `public/` statically and routes `/api/*` to the Express
+> app exported by `api/index.js`. The pool in `api/db.js` is cached across warm invocations.
+> No `PORT`/`app.listen` is used on Vercel — that's only for local `npm start`.
+
+---
+
 ## Alternative: Render (app) + Aiven (MySQL)
 
 - **Aiven** (aiven.io) → free MySQL → import `deploy/init.sql` (Aiven requires TLS, so keep `DB_SSL=true`).
