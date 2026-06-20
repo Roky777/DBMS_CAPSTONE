@@ -1,0 +1,21 @@
+# MySQL for the Library Management System.
+# On first start, MySQL runs every file mounted into /docker-entrypoint-initdb.d
+# in alphabetical order — so the schema, data, views and procedures load automatically.
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: library_mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+    ports:
+      - "3306:3306"
+    volumes:
+      - library_data:/var/lib/mysql
+      - ./01_schema.sql:/docker-entrypoint-initdb.d/01_schema.sql:ro
+      - ./02_data.sql:/docker-entrypoint-initdb.d/02_data.sql:ro
+      - ./03_views.sql:/docker-entrypoint-initdb.d/03_views.sql:ro
+      - ./05_procedures.sql:/docker-entrypoint-initdb.d/04_procedures.sql:ro
+
+volumes:
+  library_data:

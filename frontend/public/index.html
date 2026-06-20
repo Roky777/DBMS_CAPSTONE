@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Library Management System</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header>
+    <h1>📚 Library Management System</h1>
+    <p class="subtitle">DBMS Capstone — vanilla frontend connected to live MySQL <code>library_db</code></p>
+  </header>
+
+  <nav>
+    <button class="tab active" data-tab="dashboard">Dashboard</button>
+    <button class="tab" data-tab="books">Books</button>
+    <button class="tab" data-tab="members">Members</button>
+    <button class="tab" data-tab="loans">Active Loans</button>
+    <button class="tab" data-tab="issue">Issue Book</button>
+    <button class="tab" data-tab="fines">Fines</button>
+  </nav>
+
+  <main>
+    <section id="dashboard" class="panel active">
+      <h2>Overview</h2>
+      <div class="cards" id="statCards"></div>
+    </section>
+
+    <section id="books" class="panel">
+      <h2>Book Catalogue</h2>
+      <input type="text" id="bookSearch" placeholder="Search by title, author, or category…" />
+      <div class="table-wrap"><table id="booksTable"></table></div>
+    </section>
+
+    <section id="members" class="panel">
+      <h2>Members</h2>
+      <div class="table-wrap"><table id="membersTable"></table></div>
+    </section>
+
+    <section id="loans" class="panel">
+      <h2>Active Loans</h2>
+      <div class="table-wrap"><table id="loansTable"></table></div>
+    </section>
+
+    <section id="issue" class="panel">
+      <h2>Issue a Book</h2>
+      <form id="issueForm" class="form">
+        <label>Available copy
+          <select id="copySelect" required></select>
+        </label>
+        <label>Member
+          <select id="memberSelect" required></select>
+        </label>
+        <label>Loan period (days)
+          <input type="number" id="daysInput" value="14" min="1" max="60" />
+        </label>
+        <button type="submit">Issue Book</button>
+      </form>
+      <p id="issueMsg" class="msg"></p>
+    </section>
+
+    <section id="fines" class="panel">
+      <h2>Outstanding Fines</h2>
+      <div class="table-wrap"><table id="finesTable"></table></div>
+    </section>
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>
