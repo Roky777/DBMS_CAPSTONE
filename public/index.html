@@ -3,69 +3,115 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Library Management System</title>
+  <title>Athenaeum · Library Desk</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <header>
-    <h1>📚 Library Management System</h1>
-    <p class="subtitle">DBMS Capstone — vanilla frontend connected to live MySQL <code>library_db</code></p>
-  </header>
+<div class="app">
 
-  <nav>
-    <button class="tab active" data-tab="dashboard">Dashboard</button>
-    <button class="tab" data-tab="books">Books</button>
-    <button class="tab" data-tab="members">Members</button>
-    <button class="tab" data-tab="loans">Active Loans</button>
-    <button class="tab" data-tab="issue">Issue Book</button>
-    <button class="tab" data-tab="fines">Fines</button>
-  </nav>
+  <!-- ---------------- sidebar ---------------- -->
+  <aside class="sidebar">
+    <div class="brand">
+      <span class="brand-mark">A</span>
+      <div>
+        <div class="brand-name">Athenaeum</div>
+        <div class="brand-sub">Library Desk</div>
+      </div>
+    </div>
 
-  <main>
+    <nav class="nav">
+      <button class="nav-item active" data-tab="dashboard"><span>◆</span> Overview</button>
+      <button class="nav-item" data-tab="books"><span>❦</span> Catalogue</button>
+      <button class="nav-item" data-tab="loans"><span>↻</span> On Loan</button>
+      <button class="nav-item" data-tab="issue"><span>＋</span> Issue a Book</button>
+      <button class="nav-item" data-tab="members"><span>☺</span> Members</button>
+      <button class="nav-item" data-tab="fines"><span>₹</span> Fines</button>
+    </nav>
+
+    <div class="side-foot">
+      <span class="dot" id="connDot"></span>
+      <span id="connText">connecting…</span>
+    </div>
+  </aside>
+
+  <!-- ---------------- main ---------------- -->
+  <main class="main">
+
     <section id="dashboard" class="panel active">
-      <h2>Overview</h2>
-      <div class="cards" id="statCards"></div>
+      <header class="page-head">
+        <h1>Good day at the desk</h1>
+        <p>A quick look at the shelves and the borrowers today.</p>
+      </header>
+      <div class="stat-row" id="statCards"></div>
+      <div class="hint-card">
+        <h3>How this desk works</h3>
+        <p>Every action here runs against a live MySQL database. Issuing or returning a book
+        calls a stored procedure, and late fines are raised automatically by a database trigger —
+        the app never decides those rules on its own.</p>
+      </div>
     </section>
 
     <section id="books" class="panel">
-      <h2>Book Catalogue</h2>
-      <input type="text" id="bookSearch" placeholder="Search by title, author, or category…" />
-      <div class="table-wrap"><table id="booksTable"></table></div>
-    </section>
-
-    <section id="members" class="panel">
-      <h2>Members</h2>
-      <div class="table-wrap"><table id="membersTable"></table></div>
+      <header class="page-head">
+        <h1>Catalogue</h1>
+        <p>Browse every title the library holds, with live copy availability.</p>
+      </header>
+      <div class="search">
+        <input type="text" id="bookSearch" placeholder="Search a title, author or subject…" />
+      </div>
+      <div class="card-surface"><table id="booksTable"></table></div>
     </section>
 
     <section id="loans" class="panel">
-      <h2>Active Loans</h2>
-      <div class="table-wrap"><table id="loansTable"></table></div>
+      <header class="page-head">
+        <h1>On Loan</h1>
+        <p>Books currently out. Overdue ones are flagged in red.</p>
+      </header>
+      <div class="card-surface"><table id="loansTable"></table></div>
     </section>
 
     <section id="issue" class="panel">
-      <h2>Issue a Book</h2>
-      <form id="issueForm" class="form">
-        <label>Available copy
+      <header class="page-head">
+        <h1>Issue a Book</h1>
+        <p>Hand a copy to a member and set the return date.</p>
+      </header>
+      <form id="issueForm" class="issue-form">
+        <label>Copy on the shelf
           <select id="copySelect" required></select>
         </label>
         <label>Member
           <select id="memberSelect" required></select>
         </label>
-        <label>Loan period (days)
+        <label>Lend for (days)
           <input type="number" id="daysInput" value="14" min="1" max="60" />
         </label>
-        <button type="submit">Issue Book</button>
+        <button type="submit">Issue this book</button>
+        <p id="issueMsg" class="msg"></p>
       </form>
-      <p id="issueMsg" class="msg"></p>
+    </section>
+
+    <section id="members" class="panel">
+      <header class="page-head">
+        <h1>Members</h1>
+        <p>Everyone registered to borrow from the library.</p>
+      </header>
+      <div class="card-surface"><table id="membersTable"></table></div>
     </section>
 
     <section id="fines" class="panel">
-      <h2>Outstanding Fines</h2>
-      <div class="table-wrap"><table id="finesTable"></table></div>
+      <header class="page-head">
+        <h1>Fines</h1>
+        <p>Outstanding dues, totalled per member.</p>
+      </header>
+      <div class="card-surface"><table id="finesTable"></table></div>
     </section>
-  </main>
 
-  <script src="app.js"></script>
+  </main>
+</div>
+
+<script src="app.js"></script>
 </body>
 </html>
