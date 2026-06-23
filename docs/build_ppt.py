@@ -22,7 +22,9 @@ prs = Presentation(); prs.slide_width = Inches(13.333); prs.slide_height = Inche
 SW, SH = prs.slide_width, prs.slide_height
 BLANK = prs.slide_layouts[6]
 
+PG = [0]
 def slide(bg=PAPER):
+    PG[0] += 1
     s = prs.slides.add_slide(BLANK)
     r = s.shapes.add_shape(MSO_SHAPE.RECTANGLE, 0,0,SW,SH)
     r.fill.solid(); r.fill.fore_color.rgb = bg; r.line.fill.background(); r.shadow.inherit=False
@@ -86,9 +88,9 @@ def title(s, txt, x=0.9, y=0.95, w=11.5, size=34, color=NAVY):
 def bar(s, x=0.92, y=1.72, w=0.9):
     rect(s,x,y,w,0.06,fill=TERRA,shape=MSO_SHAPE.RECTANGLE)
 
-def footer(s,n):
+def footer(s,n=None):
     text(box(s,0.9,7.04,8,0.33),[("Athenaeum · Library Management System",10,MUTED,False,SANS)])
-    text(box(s,11.6,7.04,1.0,0.33),[(str(n),10,MUTED,False,SANS)],align=PP_ALIGN.RIGHT)
+    text(box(s,11.6,7.04,1.0,0.33),[(str(PG[0]),10,MUTED,False,SANS)],align=PP_ALIGN.RIGHT)
 
 def shot(s, name, x, y, w):
     """place a screenshot (1380x900 → ratio 1.5333) with a soft frame."""
@@ -181,6 +183,28 @@ for i,(lab,mid,sub,c) in enumerate(tiers):
     x+=3.87
 text(box(s,0.92,6.1,11.4,0.6),[("Hosted as: application on Vercel · database on Aiven.",15,MUTED,False,SANS)])
 footer(s,5)
+
+# ============================== [P2] ER DIAGRAM
+s = slide(); kicker(s,"PART 2","How we did it"); title(s,"From ER diagram to 11 tables"); bar(s)
+text(box(s,0.92,1.9,11.4,0.5),[
+    ("The entity–relationship design — each box is an entity that becomes one table:",15.5,INK,False,SANS)])
+# ER image (ratio 1.803:1)
+erw = 9.0; erh = erw/1.803
+rect(s,0.55-0.05,2.45-0.05,erw+0.1,erh+0.1,fill=WHITE,line=LINE,lw=1.2,radius=0.02)
+s.shapes.add_picture(os.path.join(SHOTS,"er.png"),Inches(0.55),Inches(2.45),Inches(erw),Inches(erh))
+# side note
+nx = 9.85
+rect(s,nx,2.45,3.0,erh,fill=SOFT,line=LINE,lw=1.2,radius=0.05)
+text(box(s,nx+0.28,2.7,2.5,0.4),[("11 tables",17,TERRA,True,SANS)])
+bullets(box(s,nx+0.28,3.25,2.5,3.4),[
+    ("5 ","catalogue"),
+    ("1 ","inventory (copies)"),
+    ("2 ","people"),
+    ("3 ","activity"),
+], size=14, gap=9)
+text(box(s,nx+0.28,5.2,2.5,1.4),[
+    ("Lines show cardinality — the fork (crow's foot) marks the 'many' side.",12.5,MUTED,False,SANS)],space=1.12)
+footer(s)
 
 # ============================== 6 [P2] DATA MODEL
 s = slide(); kicker(s,"PART 2","How we did it"); title(s,"The data model — 11 entities"); bar(s)

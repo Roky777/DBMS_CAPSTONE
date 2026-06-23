@@ -1,0 +1,110 @@
+digraph ER {
+  graph [rankdir=LR, splines=spline, nodesep=0.5, ranksep=1.1, bgcolor="#FBF6EE",
+         pad=0.3, fontname="Helvetica"];
+  node  [shape=plaintext, fontname="Helvetica"];
+  edge  [color="#7A7263", penwidth=1.6, fontname="Helvetica", fontsize=11,
+         fontcolor="#A8503A", arrowsize=1.0];
+
+  // ---- table node template: title bar + key columns ----
+  publisher [label=<
+    <table border="0" cellborder="1" cellspacing="0" cellpadding="6" bgcolor="white" color="#E6DCCC">
+      <tr><td bgcolor="#26415E"><font color="white"><b>publisher</b></font></td></tr>
+      <tr><td align="left"><b>publisher_id</b> PK</td></tr>
+      <tr><td align="left">name, city, country</td></tr>
+    </table>>];
+
+  category [label=<
+    <table border="0" cellborder="1" cellspacing="0" cellpadding="6" bgcolor="white" color="#E6DCCC">
+      <tr><td bgcolor="#26415E"><font color="white"><b>category</b></font></td></tr>
+      <tr><td align="left"><b>category_id</b> PK</td></tr>
+      <tr><td align="left">name</td></tr>
+      <tr><td align="left">parent_id FK ↺</td></tr>
+    </table>>];
+
+  author [label=<
+    <table border="0" cellborder="1" cellspacing="0" cellpadding="6" bgcolor="white" color="#E6DCCC">
+      <tr><td bgcolor="#26415E"><font color="white"><b>author</b></font></td></tr>
+      <tr><td align="left"><b>author_id</b> PK</td></tr>
+      <tr><td align="left">first_name, last_name</td></tr>
+    </table>>];
+
+  book [label=<
+    <table border="0" cellborder="1" cellspacing="0" cellpadding="6" bgcolor="white" color="#E6DCCC">
+      <tr><td bgcolor="#A8503A"><font color="white"><b>book</b></font></td></tr>
+      <tr><td align="left"><b>book_id</b> PK</td></tr>
+      <tr><td align="left">isbn, title, price</td></tr>
+      <tr><td align="left">publisher_id FK</td></tr>
+      <tr><td align="left">category_id FK</td></tr>
+    </table>>];
+
+  book_author [label=<
+    <table border="0" cellborder="1" cellspacing="0" cellpadding="6" bgcolor="#F4ECE0" color="#E6DCCC">
+      <tr><td bgcolor="#2F5170"><font color="white"><b>book_author</b> (junction)</font></td></tr>
+      <tr><td align="left"><b>book_id</b> PK FK</td></tr>
+      <tr><td align="left"><b>author_id</b> PK FK</td></tr>
+      <tr><td align="left">author_role</td></tr>
+    </table>>];
+
+  book_copy [label=<
+    <table border="0" cellborder="1" cellspacing="0" cellpadding="6" bgcolor="white" color="#E6DCCC">
+      <tr><td bgcolor="#26415E"><font color="white"><b>book_copy</b></font></td></tr>
+      <tr><td align="left"><b>copy_id</b> PK</td></tr>
+      <tr><td align="left">book_id FK</td></tr>
+      <tr><td align="left">barcode, status</td></tr>
+    </table>>];
+
+  member [label=<
+    <table border="0" cellborder="1" cellspacing="0" cellpadding="6" bgcolor="white" color="#E6DCCC">
+      <tr><td bgcolor="#26415E"><font color="white"><b>member</b></font></td></tr>
+      <tr><td align="left"><b>member_id</b> PK</td></tr>
+      <tr><td align="left">name, email</td></tr>
+      <tr><td align="left">membership_type</td></tr>
+    </table>>];
+
+  staff [label=<
+    <table border="0" cellborder="1" cellspacing="0" cellpadding="6" bgcolor="white" color="#E6DCCC">
+      <tr><td bgcolor="#26415E"><font color="white"><b>staff</b></font></td></tr>
+      <tr><td align="left"><b>staff_id</b> PK</td></tr>
+      <tr><td align="left">name, role</td></tr>
+    </table>>];
+
+  borrowing [label=<
+    <table border="0" cellborder="1" cellspacing="0" cellpadding="6" bgcolor="white" color="#E6DCCC">
+      <tr><td bgcolor="#A8503A"><font color="white"><b>borrowing</b></font></td></tr>
+      <tr><td align="left"><b>borrow_id</b> PK</td></tr>
+      <tr><td align="left">copy_id FK</td></tr>
+      <tr><td align="left">member_id FK</td></tr>
+      <tr><td align="left">issued_by FK</td></tr>
+      <tr><td align="left">borrow/due/return dates</td></tr>
+    </table>>];
+
+  fine [label=<
+    <table border="0" cellborder="1" cellspacing="0" cellpadding="6" bgcolor="white" color="#E6DCCC">
+      <tr><td bgcolor="#26415E"><font color="white"><b>fine</b></font></td></tr>
+      <tr><td align="left"><b>fine_id</b> PK</td></tr>
+      <tr><td align="left">borrow_id FK · UNIQUE</td></tr>
+      <tr><td align="left">amount, paid</td></tr>
+    </table>>];
+
+  reservation [label=<
+    <table border="0" cellborder="1" cellspacing="0" cellpadding="6" bgcolor="white" color="#E6DCCC">
+      <tr><td bgcolor="#26415E"><font color="white"><b>reservation</b></font></td></tr>
+      <tr><td align="left"><b>reservation_id</b> PK</td></tr>
+      <tr><td align="left">book_id FK</td></tr>
+      <tr><td align="left">member_id FK</td></tr>
+    </table>>];
+
+  // ---- relationships (crow's foot: tee=one, crow=many) ----
+  publisher -> book        [dir=both, arrowtail=tee,  arrowhead=crow, taillabel="1", headlabel="N"];
+  category  -> book        [dir=both, arrowtail=tee,  arrowhead=crow, taillabel="1", headlabel="N"];
+  category  -> category    [dir=both, arrowtail=tee,  arrowhead=crow, label="parent"];
+  book      -> book_author [dir=both, arrowtail=tee,  arrowhead=crow, taillabel="1", headlabel="N"];
+  author    -> book_author [dir=both, arrowtail=tee,  arrowhead=crow, taillabel="1", headlabel="N"];
+  book      -> book_copy   [dir=both, arrowtail=tee,  arrowhead=crow, taillabel="1", headlabel="N"];
+  book_copy -> borrowing   [dir=both, arrowtail=tee,  arrowhead=crow, taillabel="1", headlabel="N"];
+  member    -> borrowing   [dir=both, arrowtail=tee,  arrowhead=crow, taillabel="1", headlabel="N"];
+  staff     -> borrowing   [dir=both, arrowtail=tee,  arrowhead=crow, taillabel="1", headlabel="N"];
+  borrowing -> fine        [dir=both, arrowtail=tee,  arrowhead=tee,  taillabel="1", headlabel="1"];
+  book      -> reservation [dir=both, arrowtail=tee,  arrowhead=crow, taillabel="1", headlabel="N"];
+  member    -> reservation [dir=both, arrowtail=tee,  arrowhead=crow, taillabel="1", headlabel="N"];
+}
